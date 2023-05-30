@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: rgb(215, 229, 233);
+        }
+        #board {
+            display: flex;
+            flex-wrap: wrap;
+            width: 300px;
+            height: 300px;
+            border: 1px solid #000;
+        }
+        .cell {
+            box-sizing: border-box;
+            width: calc(100% / 3);
+            height: calc(100% / 3);
+            border: 1px solid black;
+            font-size: 50px;
+            text-align: center;
+            line-height: 90px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .cursor {
+            cursor: default;
+        }
+        .circle {
+            border: 5px solid black;
+            border-radius: 50%;
+            height: 50%;
+            width: 50%;
+        }
+        .cross {
+            position: relative;
+            width: 70%;
+            height: 5%;
+        }
+        .cross:before, .cross:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+        }
+        .cross:before {
+            transform: rotate(45deg);
+        }
+
+        .cross:after {
+            transform: rotate(-45deg);
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <hr>
+    <div id="board">
+        <div class="cell"><div></div></div>
+        <div class="cell"><div></div></div>
+        <div class="cell"><div></div></div>
+        <div class="cell"><div></div></div>
+        <div class="cell"><div></div></div>
+        <div class="cell"><div></div></div>
+        <div class="cell"><div></div></div>
+        <div class="cell"><div></div></div>
+        <div class="cell"><div></div></div>
+    </div>
+    <hr>
+    <button id="restart">Restart Game</button>
+    <h3 id="win"></h3>
+    <script>
+        const cells = document.querySelectorAll(".cell");
+        const restartBtn = document.getElementById("restart");
+        let currentPlayer = "x";
+        let xScore = [];
+        let oScore = [];
+        const winningCombos = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+        
+        newGame();
+
+        restartBtn.addEventListener("click", newGame);
+        restartBtn.addEventListener("touchstart", newGame, false);
+        restartBtn.addEventListener("touchend", newGame, false);
+
+        function newGame() {
+            currentPlayer = "x";
+            xScore = [];
+            oScore = [];
+            document.getElementById("win").innerHTML = "";
+            cells.forEach((cell, index) => { // defining the cell id's and creating click functionalities
+            cell.setAttribute("id", index); 
+            cell.classList.remove("cursor");
+            cell.addEventListener("click", cellClick);
+            cell.addEventListener("touchstart", cellClick, false);
+            cell.addEventListener("touchend", cellClick, false);
+            cell.querySelector("div").classList = "";
+        })
+        }
+
+        function gameOver(winner) {
+            document.getElementById("win").innerHTML = winner + " has won";
+            cells.forEach((cell, index) => {
+            cell.classList.add("cursor");
+            cell.removeEventListener("click", cellClick);
+            cell.removeEventListener("touchstart", cellClick, false);
+            cell.removeEventListener("touchend", cellClick, false);
+        })
+        }
+
+
+        
+        function cellClick(e) { // clicking functionality
+
+            let num = e.target.id;
+            let selectedCell = cells[e.target.id];
+            let cellChild = selectedCell.querySelector("div");
+
+            if(cellChild.className == "") { // check if the cell is empty
+                
+
+                if(currentPlayer == "x") { // play
+                    cellChild.classList.add("cross");
+                    xScore.push(parseInt(num));
+                    //console.log(xScore)
+                } else {
+                    cellChild.classList.add("circle");
+                    oScore.push(parseInt(num));
+                    //console.log(oScore)
+                };
+
+
+                if(currentPlayer == "x") { // change current player
+                    currentPlayer = "o"
+                } else {
+                    currentPlayer = "x"
+                };
+
+
+                selectedCell.removeEventListener("click", cellClick);
+                selectedCell.removeEventListener("touchstart", cellClick, false);
+                selectedCell.removeEventListener("touchend", cellClick, false);
+                selectedCell.setAttribute("class", "cell cursor");
+
+
+                for (let i = 0; i < winningCombos.length; i++) { // check if anyone has won
+
+
+                    if (xScore.includes(winningCombos[i][0]) && // check if "x" has won
+                    xScore.includes(winningCombos[i][1]) && 
+                    xScore.includes(winningCombos[i][2])) {
+                        gameOver("x");
+                    };
+
+
+                    if (oScore.includes(winningCombos[i][0]) && // check if "o" has won
+                    oScore.includes(winningCombos[i][1]) && 
+                    oScore.includes(winningCombos[i][2])) {
+                        gameOver("o");
+                    }                    
+                }
+            }
+        }
+    </script>
+</body>
+</html>
